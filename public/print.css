@@ -1,0 +1,244 @@
+@page {
+  margin: 9mm;
+}
+
+@media print {
+  :root {
+    --bg: #ffffff;
+    --panel: #ffffff;
+    --ink: #24171e;
+    --muted: #554a50;
+    --line: #cfc6c1;
+    --shadow: none;
+  }
+
+  *, *::before, *::after {
+    animation: none !important;
+    box-shadow: none !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  html, body {
+    background: #ffffff !important;
+    color: var(--ink);
+    font-size: 9.5pt;
+    line-height: 1.3;
+  }
+
+  .topbar,
+  .no-print,
+  .reveal-controls,
+  .overlay,
+  .host-votes-card,
+  .methodology-card,
+  .chart-scroll-hint {
+    display: none !important;
+  }
+
+  .app {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .print-header {
+    display: block;
+    margin: 0 0 4mm;
+    padding-bottom: 2.5mm;
+    border-bottom: 1.5px solid var(--wine);
+  }
+
+  .print-header h1 {
+    margin: 0.5mm 0;
+    font-size: 17pt;
+    color: var(--wine);
+  }
+
+  .print-kicker {
+    color: var(--muted);
+    font-size: 8pt;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .banner {
+    margin-bottom: 3mm;
+    padding: 3mm;
+    background: #f4ebef !important;
+    color: var(--ink) !important;
+    border-color: var(--gold);
+    break-inside: avoid;
+  }
+
+  .banner-kicker,
+  .pot-total,
+  .winner-couple,
+  .winner-wine,
+  .winner-note {
+    color: var(--ink) !important;
+  }
+
+  .banner .big,
+  .winner-couple {
+    font-size: 15pt;
+  }
+
+  .banner-kicker,
+  .pot-total,
+  .winner-wine,
+  .winner-note {
+    font-size: 9pt;
+  }
+
+  .card {
+    margin: 0 0 3mm;
+    padding: 3mm;
+    border: 1px solid var(--line);
+    border-radius: 2mm;
+    background: #ffffff;
+  }
+
+  h1, h2, h3,
+  .section-label {
+    break-after: avoid;
+  }
+
+  h2 {
+    margin-top: 0;
+    margin-bottom: 2mm;
+    font-size: 12pt;
+  }
+
+  h3 {
+    margin: 2mm 0 1mm;
+    font-size: 9.5pt;
+  }
+
+  .result-item,
+  .winner-entry,
+  .insight-section,
+  .match-box,
+  .wine-stat-item,
+  .ballot-comparison-row,
+  .saved-note {
+    break-inside: avoid;
+  }
+
+  .result-item {
+    gap: 2mm;
+    margin-bottom: 1.5mm;
+    padding: 1.8mm;
+    border-radius: 2mm;
+  }
+
+  .place {
+    min-width: 16mm;
+    font-size: 14pt;
+  }
+
+  .place span,
+  .rank-tag,
+  .result-meta,
+  .result-score,
+  .result-wine-number,
+  .hint,
+  .section-label {
+    font-size: 8.25pt;
+  }
+
+  .result-score,
+  .result-meta,
+  .hint,
+  .chart-sub {
+    color: var(--muted) !important;
+  }
+
+  .rank-distribution {
+    grid-template-columns: 27mm minmax(0, 1fr);
+    width: max-content;
+    max-width: 100%;
+  }
+
+  .rank-chart-scroll {
+    overflow: visible;
+    scrollbar-width: none;
+  }
+
+  .rank-chart-scroll .chart {
+    max-width: 100% !important;
+  }
+
+  .rank-chart-label {
+    color: var(--ink);
+    font-size: 8pt;
+  }
+
+  .chart-sub {
+    max-width: 150mm;
+    margin-bottom: 1.5mm;
+    font-size: 8.5pt;
+    line-height: 1.3;
+  }
+
+  .chart,
+  .spread-track {
+    break-inside: avoid;
+  }
+
+  .personal-favorite {
+    background: #fff8e8 !important;
+  }
+
+  .rank-tag,
+  .wine-stat-badge {
+    background: #ffffff !important;
+    color: var(--wine) !important;
+    border: 1px solid currentColor;
+  }
+
+  .ballot-comparison-row {
+    display: flex;
+    padding: 2mm;
+  }
+
+  .comparison-places {
+    text-align: right;
+  }
+
+  .saved-note p {
+    white-space: pre-wrap;
+  }
+
+  .match-box {
+    margin: 2mm 0;
+    padding: 2mm;
+    border-radius: 2mm;
+    font-size: 9pt;
+  }
+
+  .insight-section + .insight-section,
+  .chart + .insight-section,
+  .rank-distribution + .insight-section,
+  .chart-scroll-hint + .insight-section {
+    margin-top: 2.5mm;
+    padding-top: 1.5mm;
+  }
+
+  .wine-stat-item,
+  .saved-note {
+    gap: 2mm;
+    padding: 1.5mm 0;
+  }
+
+  .wine-stat-badge {
+    min-width: 17mm;
+    padding: 1mm 1.5mm;
+  }
+
+  .wine-details-card,
+  .personal-insights-card {
+    break-before: auto;
+  }
+}

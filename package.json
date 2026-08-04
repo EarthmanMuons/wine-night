@@ -1,0 +1,31 @@
+{
+	"name": "wine-night",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"deploy": "wrangler deploy",
+		"deploy:domain": "wrangler deploy --domain",
+		"destroy": "wrangler delete",
+		"destroy:dry-run": "wrangler delete --dry-run",
+		"dev": "wrangler dev",
+		"start": "wrangler dev",
+		"cf-typegen": "wrangler types",
+		"typecheck": "wrangler types --check && tsc --noEmit",
+		"test": "npm run test:scoring && npm run test:archive && npm run test:charts && npm run test:ballot-conversion && npm run test:ui && npm run test:print && npm run test:security",
+		"test:scoring": "node --import tsx scoring.test.ts",
+		"test:archive": "node --import tsx archive.test.ts",
+		"test:charts": "node charts.test.mjs",
+		"test:ballot-conversion": "node ballot-conversion.test.mjs",
+		"test:ui": "node ui.test.mjs",
+		"test:print": "node print.test.mjs",
+		"test:security": "node security.test.mjs"
+	},
+	"devDependencies": {
+		"tsx": "^4.23.5",
+		"typescript": "^7.0.2",
+		"wrangler": "^4.118.0"
+	},
+	"overrides": {
+		"undici": "7.29.0"
+	}
+}

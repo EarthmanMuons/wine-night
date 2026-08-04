@@ -1,0 +1,31 @@
+{
+  "name": "wine-night",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-04-07",
+  "migrations": [
+    {
+      "new_sqlite_classes": [
+        "WineNightEvent"
+      ],
+      "tag": "v1"
+    }
+  ],
+  "assets": {
+    // The path to the directory containing the `index.html` file to be served at `/`
+    "directory": "./public",
+    "binding": "ASSETS",
+    // Serve index.html for unknown paths so room URLs like /GRAPE work directly.
+    "not_found_handling": "single-page-application"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "class_name": "WineNightEvent",
+        "name": "EVENTS"
+      }
+    ]
+  },
+  "observability": {
+    "enabled": true
+  }
+}

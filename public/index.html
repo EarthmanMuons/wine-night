@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#4c1d36" />
+    <title>Wine Night</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/print.css" media="print" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" id="homeLink" href="/" aria-label="Wine Night home"><span class="brand-icon" aria-hidden="true">🍷</span><span>Wine Night</span></a>
+      <span class="topright">
+        <span id="roomBadge" class="room-badge" hidden></span>
+        <span id="pourBadge" class="pour-badge" role="status" aria-live="polite" aria-atomic="true" hidden></span>
+      </span>
+    </header>
+
+    <main id="app" class="app"></main>
+
+    <div id="modalRoot"></div>
+    <div id="liveStatus" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="/charts.js"></script>
+    <script src="/qrcode.js"></script>
+    <script src="/ballot-conversion.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>
