@@ -499,14 +499,12 @@ export class WineNightEvent extends DurableObject<Env> {
   setCurrentPour(input: { wineId: string }) {
     const ev = this.getEventRow();
     if (!ev || ev.phase !== "tasting") return { ok: false, error: "tasting is not active" };
-    const wine = this.sql
-      .exec("SELECT position FROM wines WHERE id = ?", input.wineId)
-      .toArray()[0] as { position: number } | undefined;
-    if (!wine) return { ok: false, error: "wine not found" };
-    const orderedPositions = (
-      this.sql.exec("SELECT position FROM wines ORDER BY position").toArray() as { position: number }[]
-    ).map((row) => row.position);
-    const pourPosition = orderedPositions.indexOf(wine.position) + 1;
+    const orderedIds = (
+      this.sql.exec("SELECT id FROM wines ORDER BY CAST(blind_code AS INTEGER)").toArray() as {
+        id: string;
+      }[]
+    ).map((row) => row.id);
+    const pourPosition = orderedIds.indexOf(input.wineId) + 1;
     if (pourPosition < 1) return { ok: false, error: "wine not found" };
     this.sql.exec("UPDATE event SET pour_position = ? WHERE id = ?", pourPosition, ev.id);
     this.broadcastSnapshot();
@@ -931,7 +929,9 @@ export class WineNightEvent extends DurableObject<Env> {
     if (!ev) return { exists: false };
     const phase = ev.phase;
 
-    const wineRows = this.sql.exec("SELECT * FROM wines ORDER BY position").toArray() as {
+    const wineRows = this.sql
+      .exec("SELECT * FROM wines ORDER BY CAST(blind_code AS INTEGER)")
+      .toArray() as {
         id: string;
         blind_code: string;
         name: string;
