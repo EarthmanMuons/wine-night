@@ -2005,7 +2005,7 @@ function renderWineDetails(snap, results, winesById) {
       ${renderConfidence(snap)}
       ${renderValue(snap, winesById)}
       ${renderMostConsistent(snap, winesById)}
-      ${renderDebateWines(snap, winesById)}
+      ${renderMostControversial(snap, winesById)}
     </div>`;
 }
 
@@ -2027,29 +2027,25 @@ function renderMostConsistent(snap, winesById) {
   </div>`;
 }
 
-function renderDebateWines(snap, winesById) {
-	const stats = snap.analytics?.wineStats || [];
-	const polar = stats.filter((s) => s.polarizing);
-	const debateItems = polar
-		.sort((a, b) => b.variance - a.variance)
-		.map((s) => {
-			const w = winesById.get(s.wineId);
-			const name = w ? w.name || 'Wine ' + s.blindCode : 'Wine ' + s.blindCode;
-			const range = s.minRank && s.maxRank ? `${formatPlace(s.minRank)} to ${formatPlace(s.maxRank)}` : '';
-			return `<div class="wine-stat-item">
-        <div class="wine-stat-badge">Wine ${esc(s.blindCode)}</div>
-        <div style="flex:1">
-          <div><strong>${esc(name)}</strong></div>
-          <div class="hint"><strong>Rank variance ${Number(s.variance).toFixed(2)}</strong>${range ? ` · range ${esc(range)}` : ''}</div>
-        </div>
-      </div>`;
-		})
-		.join('');
-	if (!debateItems) return '';
+function renderMostControversial(snap, winesById) {
+	const controversial = [...(snap.analytics?.wineStats || [])]
+		.filter((stat) => stat.n >= 2 && stat.variance > 0)
+		.sort((a, b) => b.variance - a.variance || a.avgRank - b.avgRank)[0];
+	if (!controversial) return '';
+	const wine = winesById.get(controversial.wineId);
+	const range =
+		controversial.minRank && controversial.maxRank
+			? `${formatPlace(controversial.minRank)} to ${formatPlace(controversial.maxRank)}`
+			: '';
 	return `<div class="insight-section">
-    <h3>The debate wines</h3>
-    <div class="hint">The highest-variance 20% of wines with at least two ballots and some disagreement.</div>
-    ${debateItems}
+    <h3>Most controversial</h3>
+    <div class="wine-stat-item">
+      <div class="wine-stat-badge">Wine ${esc(wine?.blindCode || controversial.blindCode)}</div>
+      <div style="flex:1">
+        <div><strong>${esc(wine?.name || `Wine ${controversial.blindCode}`)}</strong></div>
+        <div class="hint"><strong>Rank variance ${Number(controversial.variance).toFixed(2)}</strong>${range ? ` · range ${esc(range)}` : ''}</div>
+      </div>
+    </div>
   </div>`;
 }
 

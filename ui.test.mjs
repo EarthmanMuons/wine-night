@@ -72,9 +72,9 @@ check("the inline name editor avoids a redundant visible label", app.includes('i
 check("wine editing reuses the add form without prompts", app.includes('id="editingWineId"') && app.includes("textContent = 'Edit wine'") && app.includes("textContent = 'Save changes'") && !app.includes("prompt('Wine name'"));
 check("wine editing can be cancelled without saving", app.includes('id="cancelWineEdit"') && app.includes("resetWineForm(true)"));
 check("the touch drag card stays above the finger", app.includes("event.clientY - bounds.height - 18"));
-check("wine insights share one consistent statistic layout", ["Most consistently placed", "The debate wines", "Best value"].every((heading) => app.includes(heading)) && (app.match(/class="wine-stat-item"/g) || []).length >= 3);
-check("value appears before the adjacent variance insights", app.indexOf("${renderValue(snap, winesById)}") < app.indexOf("${renderMostConsistent(snap, winesById)}") && app.indexOf("${renderMostConsistent(snap, winesById)}") < app.indexOf("${renderDebateWines(snap, winesById)}"));
-check("the debate-wine selection rule is explained", app.includes("highest-variance 20% of wines") && app.includes("at least two ballots"));
+check("wine insights share one consistent statistic layout", ["Most consistently placed", "Most controversial", "Best value"].every((heading) => app.includes(heading)) && (app.match(/class="wine-stat-item"/g) || []).length >= 3);
+check("value appears before the adjacent variance insights", app.indexOf("${renderValue(snap, winesById)}") < app.indexOf("${renderMostConsistent(snap, winesById)}") && app.indexOf("${renderMostConsistent(snap, winesById)}") < app.indexOf("${renderMostControversial(snap, winesById)}"));
+check("most consistent and most controversial mirror the same single-wine layout", app.includes("function renderMostControversial") && !app.includes("polarizing"));
 check("person statistics use restrained accessible emoji", ["🎯", "🥂", "👥"].every((emoji) => app.includes(`aria-hidden="true">${emoji}</span>`)));
 check("the ballot comparison names the group clearly", app.includes("<small>The group</small>"));
 

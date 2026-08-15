@@ -369,7 +369,6 @@ export type WineAnalytics = {
   maxRank: number;
   variance: number; // variance of the ranks it received (polarization)
   ranks: number[]; // anonymous effective rank from every ballot
-  polarizing: boolean; // variance among the highest
 };
 
 export type ParticipantAnalytics = {
@@ -440,20 +439,8 @@ export function computeAnalytics(ballots: Ballot[], allWineIds: string[]): Analy
         maxRank: n ? Math.max(...vals) : 0,
         variance,
         ranks: [...vals],
-        polarizing: false,
       };
     });
-
-  // Mark polarizing wines: top 20% by variance (with at least 2 rankers). Empty -> all false.
-  const withVar = wineStats.filter((w) => w.n >= 2 && w.variance > 0);
-  if (withVar.length > 0) {
-    const sorted = [...withVar].sort((a, b) => b.variance - a.variance);
-    const cutoff = Math.max(1, Math.ceil(sorted.length * 0.2));
-    sorted.slice(0, cutoff).forEach((w) => {
-      const ww = wineStats.find((x) => x.wineId === w.wineId);
-      if (ww) ww.polarizing = true;
-    });
-  }
 
   // Per-participant spread & outliers.
   const participants: Record<string, ParticipantAnalytics> = {};
