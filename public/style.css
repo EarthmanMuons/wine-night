@@ -681,7 +681,7 @@ input[aria-invalid="true"] {
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(43, 26, 34, 0.55);
+  background: var(--ink);
   display: grid;
   place-items: center;
   z-index: 50;
