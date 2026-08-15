@@ -58,9 +58,9 @@ check("the ballot owns the voting-method decision", app.includes("Choose how you
 check("method guidance stays with the method picker", app.includes('id="methodDetails"') && app.includes("Put every wine in order") && app.includes("Choose only your three favorites"));
 check("the numeric scale stays with its method guidance", app.includes('class="method-details numeric-method-settings"') && app.includes("Scores run from 1 to"));
 check("the scoring card starts directly with ballot controls", !app.includes('class="rank-head"') && !app.includes('class="numeric-scale-row"') && !css.includes(".rank-head"));
-check("method exploration preserves the submitted ballot", !app.includes("participantApi('/api/participant/clear'") && app.includes("const source = captureBallotDraft"));
-check("method drafts can restore their exact source", app.includes("source.originMode === next") && app.includes("source.originRevision === cachedTarget.revision"));
-check("ranking conversions explain small-scale ties", app.includes("A small scale may produce tied scores") && app.includes("Your exact order is kept if you switch back before editing"));
+check("method exploration preserves the submitted ballot", !app.includes("participantApi('/api/participant/clear'") && app.includes("captureBallotDraft(wines, state.mode)"));
+check("numeric scores and wine order are kept as independent drafts, never derived from each other", app.includes("function draftKey(mode)") && !app.includes("orderedWineIdsFromNumeric") && !app.includes("proportionalScoresFromOrder"));
+check("switching methods explains the two ballots are independent", app.includes("separate from your wine order") && app.includes("separate from your numeric scores"));
 check("private notes survive voting-method previews", app.includes("state.pendingNotes = captureDraftNotes()") && app.includes("state.pendingNotes || snap.notes"));
 check("method conversion does not add a visible notice", !app.includes('class="conversion-note"') && !css.includes(".conversion-note"));
 check("the ballot heading identifies its voter", app.includes('id="ballotOwner"') && app.includes("’s ballot"));

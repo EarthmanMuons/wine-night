@@ -16,7 +16,6 @@ const state = {
 	numericMax: 100,
 	draftDirty: false,
 	methodDrafts: {},
-	activeMethodChanged: false,
 	pendingNotes: null,
 	presentationStep: null,
 };
@@ -260,7 +259,6 @@ async function joinParticipant(name, mode, numericMax = 100) {
 	state.mode = mode;
 	state.numericMax = numericMax;
 	state.methodDrafts = {};
-	state.activeMethodChanged = false;
 	state.pendingNotes = null;
 	saveRoomSession('pid', data.participantId);
 	saveRoomSession('participantKey', data.participantKey);
@@ -966,6 +964,13 @@ function wirePourControl() {
 	);
 }
 
+// Numeric scores and wine order are independent ballots: switching methods never derives
+// one from the other, it only shows whatever you last entered for that method (blank if
+// you have not touched it yet this session). Full rank and top 3 share the same order.
+function draftKey(mode) {
+	return mode === 'numeric' ? 'numeric' : 'order';
+}
+
 function draftFromSavedBallot(mode, ratings, wines, numericMax) {
 	const wineIds = wines.map((wine) => wine.id);
 	if (mode === 'numeric') {
@@ -973,80 +978,34 @@ function draftFromSavedBallot(mode, ratings, wines, numericMax) {
 		for (const wineId of wineIds) {
 			if (Number.isFinite(ratings[wineId])) values[wineId] = ratings[wineId];
 		}
-		return { mode, values, tieOrder: wineIds, numericMax, revision: 0, originMode: mode, originRevision: 0 };
+		return { values, numericMax };
 	}
 	const ranked = wineIds.filter((wineId) => Number.isFinite(ratings[wineId])).sort((a, b) => ratings[a] - ratings[b]);
 	const rankedSet = new Set(ranked);
-	const order = [...ranked, ...wineIds.filter((wineId) => !rankedSet.has(wineId))];
-	return { mode, order, revision: 0, originMode: mode, originRevision: 0 };
+	return { order: [...ranked, ...wineIds.filter((wineId) => !rankedSet.has(wineId))] };
 }
 
-function draftRatings(draft) {
+function draftRatings(mode, draft) {
 	if (!draft) return {};
-	if (draft.mode === 'numeric') return { ...draft.values };
+	if (mode === 'numeric') return { ...draft.values };
 	return Object.fromEntries(draft.order.map((wineId, index) => [wineId, index + 1]));
 }
 
-function captureBallotDraft(wines, mode, changed = state.activeMethodChanged) {
+function captureBallotDraft(wines, mode) {
 	const wineIds = wines.map((wine) => wine.id);
-	const existing = state.methodDrafts[mode] || {
-		mode,
-		revision: 0,
-		originMode: mode,
-		originRevision: 0,
-	};
-	const revision = existing.revision + (changed ? 1 : 0);
-	const metadata = changed
-		? { revision, originMode: mode, originRevision: revision }
-		: {
-				revision,
-				originMode: existing.originMode ?? mode,
-				originRevision: existing.originRevision ?? revision,
-			};
 	if (mode === 'numeric') {
 		const values = {};
 		app.querySelectorAll('.score-input').forEach((input) => {
 			if (input.value !== '') values[input.dataset.wine] = Number(input.value);
 		});
-		return {
-			mode,
-			values,
-			tieOrder: existing.tieOrder?.filter((wineId) => wineIds.includes(wineId)) || wineIds,
-			numericMax: state.numericMax,
-			...metadata,
-		};
+		return { values, numericMax: state.numericMax };
 	}
 	const visibleOrder = [...app.querySelectorAll('#rankList li')].map((item) => item.dataset.wine);
-	return { mode, order: visibleOrder.length === wineIds.length ? visibleOrder : wineIds, ...metadata };
-}
-
-function convertBallotDraft(source, targetMode, wines) {
-	const wineIds = wines.map((wine) => wine.id);
-	const previousTarget = state.methodDrafts[targetMode];
-	const revision = (previousTarget?.revision ?? -1) + 1;
-	const originMode = source.originMode ?? source.mode;
-	const originRevision = source.originRevision ?? source.revision;
-	const order =
-		source.mode === 'numeric'
-			? WineNightBallotConversion.orderedWineIdsFromNumeric(source.values, wineIds, source.tieOrder || wineIds)
-			: source.order;
-	if (targetMode === 'numeric') {
-		const rankedCount = source.mode === 'top3' ? Math.min(3, order.length) : order.length;
-		return {
-			mode: targetMode,
-			values: WineNightBallotConversion.proportionalScoresFromOrder(order, rankedCount, state.numericMax),
-			tieOrder: order,
-			numericMax: state.numericMax,
-			revision,
-			originMode,
-			originRevision,
-		};
-	}
-	return { mode: targetMode, order: [...order], revision, originMode, originRevision };
+	return { order: visibleOrder.length === wineIds.length ? visibleOrder : wineIds };
 }
 
 function draftMatchesSavedBallot(draft, mode, savedRatings, wines, savedNumericMax) {
-	if (!draft || draft.mode !== mode) return false;
+	if (!draft) return false;
 	const wineIds = wines.map((wine) => wine.id);
 	if (mode === 'numeric') {
 		if (draft.numericMax !== savedNumericMax) return false;
@@ -1070,30 +1029,26 @@ function notesMatchSaved(notes, savedNotes, wines) {
 	return wines.every((wine) => (notes[wine.id] || '').trim() === (savedNotes[wine.id] || '').trim());
 }
 
-function conversionNotice(sourceMode, targetMode, restored) {
-	if (restored) return `Your earlier ${targetMode === 'numeric' ? 'numeric scores' : 'wine order'} was restored because the converted version was not edited.`;
-	if (sourceMode === 'numeric') {
-		return 'Converted from your numeric scores. Equal or blank scores keep their previous wine order. Your submitted ballot changes only when you submit this version.';
-	}
-	if (targetMode === 'numeric') {
-		return `Converted proportionally from your ranking to the 1 to ${state.numericMax} scale. A small scale may produce tied scores. Your exact order is kept if you switch back before editing.`;
-	}
-	return 'Your wine order was kept. Your submitted ballot changes only when you submit this version.';
+function conversionNotice(targetMode) {
+	return targetMode === 'numeric'
+		? 'Numeric scores are separate from your wine order. Your submitted ballot changes only when you submit this version.'
+		: 'Wine order is separate from your numeric scores. Your submitted ballot changes only when you submit this version.';
 }
 
 function renderTasting(snap, me) {
 	const wines = snap.wines || [];
 	const mode = state.mode;
+	const key = draftKey(mode);
 	const savedMine = (me && snap.ratings && snap.ratings[me.id]) || {};
-	if (me && !state.methodDrafts[mode] && me.mode === mode) {
-		state.methodDrafts[mode] = draftFromSavedBallot(mode, savedMine, wines, me.numericMax || state.numericMax);
+	if (me && !state.methodDrafts[key] && me.mode && draftKey(me.mode) === key) {
+		state.methodDrafts[key] = draftFromSavedBallot(mode, savedMine, wines, me.numericMax || state.numericMax);
 	}
-	if (!state.methodDrafts[mode]) state.methodDrafts[mode] = draftFromSavedBallot(mode, {}, wines, state.numericMax);
-	if (mode === 'numeric' && state.methodDrafts[mode].numericMax) {
-		state.numericMax = state.methodDrafts[mode].numericMax;
+	if (!state.methodDrafts[key]) state.methodDrafts[key] = draftFromSavedBallot(mode, {}, wines, state.numericMax);
+	if (mode === 'numeric' && state.methodDrafts[key].numericMax) {
+		state.numericMax = state.methodDrafts[key].numericMax;
 		saveRoomSession('numericMax', state.numericMax);
 	}
-	const mine = draftRatings(state.methodDrafts[mode]);
+	const mine = draftRatings(mode, state.methodDrafts[key]);
 	const ballotIsSubmitted = me?.mode === mode && Object.keys(savedMine).length > 0 && !state.draftDirty;
 	const counts = state.isHost ? tallyCounts(snap) : null;
 
@@ -1206,24 +1161,17 @@ function renderTasting(snap, me) {
 						return;
 					}
 				}
-				const sourceMode = state.mode;
-				const sourceChanged = state.activeMethodChanged;
-				const source = captureBallotDraft(wines, sourceMode, sourceChanged);
-				state.methodDrafts[sourceMode] = source;
+				state.methodDrafts[draftKey(state.mode)] = captureBallotDraft(wines, state.mode);
 				state.pendingNotes = captureDraftNotes();
-				const cachedTarget = state.methodDrafts[next];
-				const restoreCached =
-					!sourceChanged &&
-					cachedTarget &&
-					source.originMode === next &&
-					source.originRevision === cachedTarget.revision;
-				state.methodDrafts[next] = restoreCached ? cachedTarget : convertBallotDraft(source, next, wines);
+				const nextKey = draftKey(next);
+				if (!state.methodDrafts[nextKey]) {
+					state.methodDrafts[nextKey] = draftFromSavedBallot(next, {}, wines, state.numericMax);
+				}
 				state.mode = next;
-				state.activeMethodChanged = false;
-				const conversionAnnouncement = conversionNotice(sourceMode, next, restoreCached);
+				const conversionAnnouncement = conversionNotice(next);
 				const targetMatchesSaved =
 					me?.mode === next &&
-					draftMatchesSavedBallot(state.methodDrafts[next], next, savedMine, wines, me.numericMax || state.numericMax);
+					draftMatchesSavedBallot(state.methodDrafts[nextKey], next, savedMine, wines, me.numericMax || state.numericMax);
 				state.draftDirty = !(targetMatchesSaved && notesMatchSaved(state.pendingNotes, snap.notes || {}, wines));
 				saveRoomSession('mode', next);
 				render();
@@ -1311,7 +1259,6 @@ function renderTasting(snap, me) {
 					state.participantId = null;
 					state.draftDirty = false;
 					state.methodDrafts = {};
-					state.activeMethodChanged = false;
 					state.pendingNotes = null;
 					await fetchSnapshot();
 				} catch (error) {
@@ -1476,7 +1423,6 @@ function renderBallotInputs(root, wines, mode, mine, notes, ballotIsSubmitted) {
 	if (scaleInput) {
 		scaleInput.addEventListener('input', () => {
 			state.draftDirty = true;
-			state.activeMethodChanged = true;
 			const status = root.querySelector('#saveStatus');
 			if (status) status.hidden = true;
 			const maximum = Number(scaleInput.value);
@@ -1521,7 +1467,6 @@ function renderBallotInputs(root, wines, mode, mine, notes, ballotIsSubmitted) {
 	area.querySelectorAll('.score-input').forEach((control) =>
 		control.addEventListener('input', () => {
 			state.draftDirty = true;
-			state.activeMethodChanged = true;
 			const status = app.querySelector('#saveStatus');
 			if (status) status.hidden = true;
 		}),
@@ -1573,7 +1518,6 @@ function showNumericFormatError(input) {
 
 function refreshRankLabels(list) {
 	state.draftDirty = true;
-	state.activeMethodChanged = true;
 	const isTop3 = list.dataset.mode === 'top3';
 	const rankCount = Number(list.dataset.rankCount || 3);
 	[...list.children].forEach((item, i) => {
@@ -1763,8 +1707,7 @@ async function submitCurrent(wines, mode) {
 		wineId: input.dataset.noteWine,
 		note: input.value,
 	}));
-	state.methodDrafts[mode] = captureBallotDraft(wines, mode, state.activeMethodChanged);
-	state.activeMethodChanged = false;
+	state.methodDrafts[draftKey(mode)] = captureBallotDraft(wines, mode);
 	state.pendingNotes = Object.fromEntries(notes.map((note) => [note.wineId, note.note]));
 	const submitButtons = [...app.querySelectorAll('[data-submit-ballot]')];
 	submitButtons.forEach((button) => {
