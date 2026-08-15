@@ -25,6 +25,7 @@ check("unused WebSocket snapshot requests are not accepted", !event.includes('ca
 check("public snapshots do not expose the participant roster", event.includes("const participants = caller.isHost"));
 check("automatic room codes use browser cryptography", app.includes("crypto.getRandomValues(bytes)"));
 check("host archive downloads require host authorization", index.includes('path === "/api/host/archive"') && index.includes("authorizedStub(env, room, hostKey(request))"));
+check("removing a participant from the roster requires host authorization", index.slice(index.indexOf('/api/host/remove-participant'), index.indexOf('/api/host/reset')).includes("authorizedStub(env, body.room, hostKey(request))"));
 check("host archives do not serialize private notes", !event.slice(event.indexOf("exportHostArchive"), event.indexOf("restoreHostArchive")).includes("SELECT wine_id, note FROM notes"));
 check("restores issue fresh participant credentials", event.slice(event.indexOf("restoreHostArchive")).includes("crypto.randomUUID() + crypto.randomUUID()"));
 check("restore payloads have a dedicated size ceiling", index.includes("MAX_ARCHIVE_BYTES"));

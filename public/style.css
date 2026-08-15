@@ -485,9 +485,25 @@ input.score-input:focus::placeholder { opacity: 0; }
 .pour-controls .pour-previous { width: auto; flex: 0 0 auto; padding-left: 12px; padding-right: 12px; }
 .pour-controls .pour-next { flex: 1; }
 .status-roster { display: flex; flex-wrap: wrap; gap: 7px; margin: 10px 0; }
-.status-chip { padding: 6px 9px; border-radius: 999px; font-size: 13px; font-weight: 700; border: 1px solid; }
+.status-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; border-radius: 999px; font-size: 13px; font-weight: 700; border: 1px solid; }
 .status-done { color: #245b45; background: #e7f6ef; border-color: #79af96; }
 .status-waiting { color: #6d3b18; background: #fff4df; border-color: #c99657; }
+.chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.1);
+  color: inherit;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+}
+.chip-remove:hover, .chip-remove:focus-visible { background: rgba(0, 0, 0, 0.22); }
 .ballot-status { border-top: 1px solid var(--line); margin-top: 16px; padding-top: 14px; }
 .pour-now {
   text-align: center;

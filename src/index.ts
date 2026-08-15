@@ -383,6 +383,15 @@ export default {
         return r.ok ? json(r) : bad(r.error ?? "failed");
       }
 
+      if (request.method === "POST" && path === "/api/host/remove-participant") {
+        const body = await readJson<{ room: string; participantId: string }>(request);
+        const stub = await authorizedStub(env, body.room, hostKey(request));
+        if (!stub) return json({ error: "unauthorized" }, 403);
+        if (!body.participantId) return bad("room and participantId required");
+        const r = await stub.leaveVoting({ participantId: body.participantId });
+        return r.ok ? json(r) : bad(r.error ?? "failed");
+      }
+
       if (request.method === "POST" && path === "/api/host/reset") {
         const body = await readJson<{ room: string; mode: "setup" | "all" }>(request);
         const stub = await authorizedStub(env, body.room, hostKey(request));

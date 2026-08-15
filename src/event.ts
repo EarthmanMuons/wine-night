@@ -739,7 +739,11 @@ export class WineNightEvent extends DurableObject<Env> {
     return { ok: true };
   }
 
-  /** Remove only this voter and their private voting data from an active tasting. */
+  /**
+   * Remove only this voter and their private voting data from an active tasting.
+   * Used both for self-service leaving and for host cleanup of an abandoned or
+   * duplicate join (e.g. someone who lost their session and had to rejoin).
+   */
   leaveVoting(input: { participantId: string }) {
     const ev = this.getEventRow();
     if (!ev || ev.phase !== "tasting") return { ok: false, error: "voting is closed" };

@@ -63,6 +63,8 @@ check("numeric scores and wine order are kept as independent drafts, never deriv
 check("switching methods explains the two ballots are independent", app.includes("separate from your wine order") && app.includes("separate from your numeric scores"));
 check("private notes survive voting-method previews", app.includes("state.pendingNotes = captureDraftNotes()") && app.includes("state.pendingNotes || snap.notes"));
 check("method conversion does not add a visible notice", !app.includes('class="conversion-note"') && !css.includes(".conversion-note"));
+check("hosts can remove an abandoned or duplicate voter from the roster", app.includes("data-remove-participant=") && app.includes("wireHostParticipantRemoval") && app.includes("'/api/host/remove-participant'"));
+check("removing a voter who already submitted warns that their vote is deleted", app.includes("already submitted a ballot. Removing them deletes their vote and notes"));
 check("the ballot heading identifies its voter", app.includes('id="ballotOwner"') && app.includes("’s ballot"));
 check("the ballot heading opens an accessible inline name editor", app.includes('id="editNameToggle"') && app.includes('aria-controls="nameEditor"') && app.includes('id="cancelNameEdit"'));
 check("the inline name editor avoids a redundant visible label", app.includes('id="editName"') && app.includes('aria-label="Name on your ballot"'));

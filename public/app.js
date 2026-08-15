@@ -897,6 +897,7 @@ function renderHostTastingStatus(snap) {
 									(participant) => `
           <span class="status-chip ${participant.hasSubmitted ? 'status-done' : 'status-waiting'}">
             ${participant.hasSubmitted ? 'Submitted' : 'Not submitted'}: ${esc(participant.name)}
+            <button type="button" class="chip-remove" data-remove-participant="${participant.id}" data-remove-participant-name="${esc(participant.name)}" ${participant.hasSubmitted ? 'data-remove-participant-submitted="1"' : ''} aria-label="Remove ${esc(participant.name)} from the roster">✕</button>
           </span>`,
 								)
 								.join('')
@@ -960,6 +961,28 @@ function wirePourControl() {
 				}),
 			);
 			if (!updated) syncCurrentPour(state.snapshot);
+		}),
+	);
+}
+
+// Cleans up an abandoned or duplicate join (e.g. someone who lost their session and
+// had to rejoin under a new name). Deletes that participant's ballot and notes too, so
+// the confirmation spells out whether they had already submitted a ballot.
+function wireHostParticipantRemoval() {
+	if (!state.isHost) return;
+	app.querySelectorAll('[data-remove-participant]').forEach((button) =>
+		button.addEventListener('click', async () => {
+			const name = button.dataset.removeParticipantName;
+			const warning = button.dataset.removeParticipantSubmitted
+				? `${name} already submitted a ballot. Removing them deletes their vote and notes, and can't be undone. Remove them anyway?`
+				: `Remove ${name} from the roster? They haven't submitted a ballot.`;
+			if (!confirm(warning)) return;
+			await refreshAfter(
+				api('/api/host/remove-participant', {
+					room: state.room,
+					participantId: button.dataset.removeParticipant,
+				}),
+			);
 		}),
 	);
 }
@@ -1268,6 +1291,7 @@ function renderTasting(snap, me) {
 		}
 	}
 	wirePourControl();
+	wireHostParticipantRemoval();
 }
 
 function renderVotingMethodDetails(mode) {
