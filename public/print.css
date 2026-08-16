@@ -32,7 +32,8 @@
   .overlay,
   .host-votes-card,
   .methodology-card,
-  .chart-scroll-hint {
+  .chart-scroll-hint,
+  .banner-theme {
     display: none !important;
   }
 
@@ -73,7 +74,6 @@
   }
 
   .banner-kicker,
-  .pot-total,
   .winner-couple,
   .winner-wine,
   .winner-note {
@@ -86,7 +86,6 @@
   }
 
   .banner-kicker,
-  .pot-total,
   .winner-wine,
   .winner-note {
     font-size: 9pt;

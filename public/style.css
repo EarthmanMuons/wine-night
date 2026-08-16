@@ -431,12 +431,12 @@ input.score-input:focus::placeholder { opacity: 0; }
 }
 .print-header { display: none; }
 .banner .big { font-size: 30px; font-weight: 800; color: #fff; }
-.banner-kicker { color: #fff; font-size: 15px; font-weight: 700; }
-.pot-total { color: #fff; font-size: 18px; font-weight: 800; margin: 2px 0 10px; }
-.winner-entry + .winner-entry { border-top: 1px solid rgba(255,255,255,.35); margin-top: 12px; padding-top: 12px; }
+.banner-theme { color: #fff; font-size: 19px; font-weight: 800; margin-bottom: 8px; }
+.banner-kicker { color: #f7eaf0; font-size: 14px; font-weight: 700; letter-spacing: .2px; margin-bottom: 10px; }
+.banner.is-tie .winner-entry { border-top: 1px solid rgba(255,255,255,.35); margin-top: 12px; padding-top: 12px; }
 .winner-couple { color: #fff; font-size: 28px; line-height: 1.15; font-weight: 850; }
 .winner-wine { color: #f7eaf0; font-size: 16px; font-weight: 650; margin-top: 5px; }
-.winner-note { color: #fff; margin-top: 12px; font-weight: 650; }
+.winner-note { color: #fff; margin: 0 0 10px; font-weight: 650; }
 .reveal-card { text-align: center; border-color: var(--gold); }
 .reveal-card .place { width: auto; font-size: 32px; }
 .reveal-wine { color: #5f5258; font-size: 16px; }

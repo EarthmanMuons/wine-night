@@ -20,6 +20,7 @@ check("results provide a print action", app.includes('id="printResults"'));
 check("print action has a recognizable icon", app.includes('class="print-icon"'));
 check("print action opens the system print dialog", app.includes("onBtn(app, '#printResults', () => window.print())"));
 check("print output includes the event theme", app.includes('class="print-header"'));
+check("the on-screen banner's theme line is hidden in print to avoid duplicating the print header's", printCss.includes(".banner-theme"));
 check("screen controls are omitted from print", printCss.includes(".no-print"));
 check("private result rows avoid page breaks", printCss.includes(".ballot-comparison-row"));
 check("large rank charts scale to the printed page", printCss.includes("max-width: 100% !important"));

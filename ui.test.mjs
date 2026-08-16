@@ -76,6 +76,9 @@ check("wine insights share one consistent statistic layout", ["Most consistently
 check("value appears before the adjacent variance insights", app.indexOf("${renderValue(snap, winesById)}") < app.indexOf("${renderMostConsistent(snap, winesById)}") && app.indexOf("${renderMostConsistent(snap, winesById)}") < app.indexOf("${renderMostControversial(snap, winesById)}"));
 check("most consistent and most controversial mirror the same single-wine layout", app.includes("function renderMostControversial") && !app.includes("polarizing"));
 check("the group insights visibility label only shows next to a private section", app.includes("function renderGroupInsights(snap, showVisibilityLabel)") && app.includes("showVisibilityLabel ? '<div class=\"section-label\">Visible to everyone</div>'") && app.includes("renderGroupInsights(snap, Boolean(personalInsightsHtml))"));
+check("the results banner shows the tasting theme on screen", app.includes('class="banner-theme"') && app.indexOf('class="banner-theme"') < app.indexOf('class="banner-kicker"') && css.includes(".banner-theme"));
+check("the pot amount is folded into the banner kicker instead of its own line", !app.includes('class="pot-total"') && !css.includes(".pot-total") && app.includes("Winner takes"));
+check("a tie shows the shared context before a divider for each co-winner, not just between them", app.includes("'is-tie'") && css.includes(".banner.is-tie .winner-entry") && app.indexOf("winner-note") < app.indexOf("${winnerEntries}"));
 check("person statistics use restrained accessible emoji", ["🎯", "🥂", "👥"].every((emoji) => app.includes(`aria-hidden="true">${emoji}</span>`)));
 check("the ballot comparison names the group clearly", app.includes("<small>The group</small>"));
 

@@ -1795,6 +1795,14 @@ function renderResults(snap, me) {
 		})
 		.join('');
 	const personalInsightsHtml = renderPersonalInsights(snap, me);
+	const potLabel = potTotal ? `$${formatPoints(potTotal)}` : null;
+	const kickerText = isTie
+		? `Tie for 1st Place${potLabel ? ` · ${potLabel} pot` : ''}`
+		: winners.length
+			? `Winner takes ${potLabel ? `the ${potLabel} pot` : 'the pot'}`
+			: potLabel
+				? `The ${potLabel} pot`
+				: 'The pot';
 
 	app.innerHTML = `
     <div class="print-header">
@@ -1802,11 +1810,11 @@ function renderResults(snap, me) {
       <h1>${esc(snap.event.theme || 'Wine Night')}</h1>
       <div>${results.length} wine${results.length === 1 ? '' : 's'} tasted</div>
     </div>
-    <div class="banner">
-      <div class="banner-kicker">${isTie ? 'Tie for 1st Place' : winners.length ? '1st Place · Winner takes the pot' : 'The pot'}</div>
-      ${potTotal ? `<div class="pot-total">\$${formatPoints(potTotal)}</div>` : ''}
-      ${winnerEntries}
+    <div class="banner ${isTie ? 'is-tie' : ''}">
+      ${snap.event.theme ? `<div class="banner-theme">${esc(snap.event.theme)}</div>` : ''}
+      <div class="banner-kicker">${kickerText}</div>
       ${isTie && potTotal ? '<div class="winner-note">Split the pot or hold a taste-off.</div>' : ''}
+      ${winnerEntries}
     </div>
 
     <div class="card final-ranking-card">
