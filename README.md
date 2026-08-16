@@ -45,7 +45,7 @@ The reveal combines the final result with shared and private ways to understand 
   Condorcet winner.
 - **Best value:** consensus points per dollar when usable bottle prices were entered.
 - **Most consistently placed:** the wine with the lowest rank variance, along with its average placement.
-- **Debate wines:** the highest-variance 20% of eligible wines, including rank variance and placement range.
+- **Most controversial:** the wine with the highest rank variance, along with its placement range.
 - **Most in sync with the group:** the participant whose ranking is closest to the room's consensus.
 - **Private tasting profile:** each participant's palate twin, alignment with the group excluding their own ballot, ballot compared with the
   final ranking, saved tasting notes, and numeric scoring range when applicable.
@@ -88,7 +88,7 @@ downtime, public-hosting safeguards, and permanent teardown.
 Host actions require a random room-specific host key. Each voter receives a separate participant key stored per room and browser tab. Before
 reveal, a voter can retrieve only their own ballot and private notes. The complete raw-votes table is host-only.
 
-Inactive rooms expire after 90 days. Bottle prices are optional, and price-based analysis is omitted when no usable prices were entered.
+Inactive rooms expire after 90 days.
 
 ## Statistical and voting-method references
 
