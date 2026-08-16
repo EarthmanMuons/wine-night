@@ -1794,6 +1794,7 @@ function renderResults(snap, me) {
     </div>`;
 		})
 		.join('');
+	const personalInsightsHtml = renderPersonalInsights(snap, me);
 
 	app.innerHTML = `
     <div class="print-header">
@@ -1832,9 +1833,9 @@ function renderResults(snap, me) {
 
     ${renderWineDetails(snap, results, winesById)}
 
-    ${renderGroupInsights(snap)}
+    ${renderGroupInsights(snap, Boolean(personalInsightsHtml))}
 
-    ${renderPersonalInsights(snap, me)}
+    ${personalInsightsHtml}
 
     ${state.isHost ? renderHostVotesTable(snap) : ''}
 
@@ -2049,14 +2050,16 @@ function renderMostControversial(snap, winesById) {
   </div>`;
 }
 
-function renderGroupInsights(snap) {
+// The "Visible to everyone" label only makes sense next to a "Private to you"
+// section it contrasts with; drop it when the viewer has no personal insights card.
+function renderGroupInsights(snap, showVisibilityLabel) {
 	const correlation = snap.correlation;
 	const mostConsensual = correlation?.mostConsensual;
 	if (!mostConsensual) return '';
 	const groupPct = mostConsensual ? Math.round(((mostConsensual.correlation + 1) / 2) * 100) : null;
 	return `
     <div class="card group-insights-card">
-      <div class="section-label">Visible to everyone</div>
+      ${showVisibilityLabel ? '<div class="section-label">Visible to everyone</div>' : ''}
       <h2>The tasters</h2>
       ${
 				mostConsensual

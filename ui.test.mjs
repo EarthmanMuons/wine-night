@@ -75,6 +75,7 @@ check("the touch drag card stays above the finger", app.includes("event.clientY 
 check("wine insights share one consistent statistic layout", ["Most consistently placed", "Most controversial", "Best value"].every((heading) => app.includes(heading)) && (app.match(/class="wine-stat-item"/g) || []).length >= 3);
 check("value appears before the adjacent variance insights", app.indexOf("${renderValue(snap, winesById)}") < app.indexOf("${renderMostConsistent(snap, winesById)}") && app.indexOf("${renderMostConsistent(snap, winesById)}") < app.indexOf("${renderMostControversial(snap, winesById)}"));
 check("most consistent and most controversial mirror the same single-wine layout", app.includes("function renderMostControversial") && !app.includes("polarizing"));
+check("the group insights visibility label only shows next to a private section", app.includes("function renderGroupInsights(snap, showVisibilityLabel)") && app.includes("showVisibilityLabel ? '<div class=\"section-label\">Visible to everyone</div>'") && app.includes("renderGroupInsights(snap, Boolean(personalInsightsHtml))"));
 check("person statistics use restrained accessible emoji", ["🎯", "🥂", "👥"].every((emoji) => app.includes(`aria-hidden="true">${emoji}</span>`)));
 check("the ballot comparison names the group clearly", app.includes("<small>The group</small>"));
 
