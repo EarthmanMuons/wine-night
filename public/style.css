@@ -641,10 +641,13 @@ input[aria-invalid="true"] {
 .chart { width: 100%; height: auto; display: block; margin: 6px 0; }
 .chart-title { font-size: 16px; font-weight: 750; color: var(--wine); margin: 14px 0 4px; }
 .chart-sub { font-size: 14px; line-height: 1.4; color: #65575e; margin: 0 0 8px; }
-.rank-distribution { display: grid; grid-template-columns: minmax(88px, 112px) minmax(0, 1fr); align-items: start; }
+.rank-distribution { display: grid; grid-template-columns: minmax(88px, 160px) minmax(0, 1fr); align-items: start; }
 .rank-chart-labels { min-width: 0; }
 .rank-chart-label-spacer { height: 34px; }
-.rank-chart-label { height: 48px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; overflow: hidden; color: var(--ink); font-size: 13px; font-weight: 750; text-align: right; text-overflow: ellipsis; white-space: nowrap; }
+/* text-overflow: ellipsis has no effect on right-aligned text overflowing on its
+   start side, so the label string is pre-truncated with its own "…" in JS; this
+   overflow/white-space pair is just a defensive clip in case that width is ever exceeded. */
+.rank-chart-label { height: 48px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; overflow: hidden; color: var(--ink); font-size: 13px; font-weight: 750; text-align: right; white-space: nowrap; }
 .rank-chart-scroll { overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-gutter: stable; }
 .rank-chart-scroll:focus-visible { outline: 3px solid #2f6feb; outline-offset: 2px; border-radius: 4px; }
 .rank-chart-scroll .chart { width: auto; max-width: none; margin: 0; }

@@ -24,6 +24,22 @@ check("wine labels remain outside the scrolling plot", twelveWineChart.includes(
 check("count markers are centered on their range line", twelveWineChart.includes('y="49" width="22" height="18"'));
 check("average diamond stays behind ballot markers", twelveWineChart.indexOf("<polygon") < twelveWineChart.indexOf("<rect"));
 
+const longNameChart = window.WNcharts.rankDistributionChart(
+  [
+    { label: "Bacchus Vinyard", ranks: [1, 2], average: 1.5 },
+    { label: "Bacchus Vinyard Estate Reserve", ranks: [1, 2], average: 1.5 },
+  ],
+  { maxRank: 6 },
+);
+check(
+  "a typical wine name fits the widened label column without truncation",
+  longNameChart.includes(">Bacchus Vinyard<"),
+);
+check(
+  "only names past the new, wider limit are truncated, still with a visible ellipsis and full title",
+  longNameChart.includes(">Bacchus Vinyard Est…<") && longNameChart.includes('title="Bacchus Vinyard Estate Reserve"'),
+);
+
 const largeChart = window.WNcharts.rankDistributionChart([
   { label: "Large tasting", ranks: [1, 25, 50], average: 25.3 },
 ], { maxRank: 50 });

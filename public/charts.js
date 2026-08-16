@@ -107,7 +107,7 @@
     });
     svg += "</svg>";
     const labels = rows
-      .map((row) => `<div class="rank-chart-label" title="${esc(String(row.label ?? ""))}">${esc(truncate(String(row.label ?? ""), 14))}</div>`)
+      .map((row) => `<div class="rank-chart-label" title="${esc(String(row.label ?? ""))}">${esc(truncate(String(row.label ?? ""), 20))}</div>`)
       .join("");
     const scrollHint = maxRank > 12
       ? `<div class="chart-scroll-hint">Scroll sideways to see all ${maxRank} placements.</div>`
