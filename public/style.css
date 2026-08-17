@@ -641,8 +641,13 @@ input[aria-invalid="true"] {
 .chart { width: 100%; height: auto; display: block; margin: 6px 0; }
 .chart-title { font-size: 16px; font-weight: 750; color: var(--wine); margin: 14px 0 4px; }
 .chart-sub { font-size: 14px; line-height: 1.4; color: #65575e; margin: 0 0 8px; }
-.rank-distribution { display: grid; grid-template-columns: minmax(88px, 160px) minmax(0, 1fr); align-items: start; }
-.rank-chart-labels { min-width: 0; }
+/* The label column sizes to the widest label actually present (capped at 160px as
+   a backstop via fit-content), instead of always reserving the worst-case width and
+   starving the plot column of room on narrow screens when every name happens to be
+   short. fit-content() can't be nested inside minmax(), so the ~88px floor for very
+   short names comes from .rank-chart-labels' own min-width instead. */
+.rank-distribution { display: grid; grid-template-columns: fit-content(160px) minmax(0, 1fr); align-items: start; }
+.rank-chart-labels { min-width: 88px; }
 .rank-chart-label-spacer { height: 34px; }
 /* text-overflow: ellipsis has no effect on right-aligned text overflowing on its
    start side, so the label string is pre-truncated with its own "…" in JS; this
