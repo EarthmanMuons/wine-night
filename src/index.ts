@@ -1,4 +1,5 @@
 import { WineNightEvent } from "./event";
+import { SiteStats } from "./stats";
 import { MAX_ARCHIVE_BYTES } from "./archive";
 import type { Phase } from "./types";
 
@@ -23,6 +24,13 @@ function normalizedRoom(room: unknown): string | null {
 function roomStub(env: Env, room: string) {
   const name = ROOM_PREFIX + room;
   return env.EVENTS.get(env.EVENTS.idFromName(name));
+}
+
+/** Best-effort: a hiccup recording site-wide stats must never break room creation. */
+async function recordRoomCreated(env: Env) {
+  try {
+    await env.STATS.get(env.STATS.idFromName("global")).recordRoomCreated();
+  } catch {}
 }
 
 /** Ensure a host key is valid for the room; returns the stub or null. */
@@ -141,7 +149,7 @@ const json = (data: unknown, status = 200, extraHeaders?: HeadersInit) =>
   });
 const bad = (error: string) => json({ error }, 400);
 
-export { WineNightEvent };
+export { WineNightEvent, SiteStats };
 
 export default {
   async fetch(request, env): Promise<Response> {
@@ -185,6 +193,13 @@ export default {
         );
       }
 
+      if (request.method === "GET" && path === "/api/site-stats") {
+        if (!allowRequest(clientIp(request), "site-stats", 60)) {
+          return json({ error: "too many requests; wait a minute" }, 429);
+        }
+        return json(await env.STATS.get(env.STATS.idFromName("global")).getStats());
+      }
+
       if (request.method === "GET" && path === "/api/host/archive") {
         const room = normalizedRoom(url.searchParams.get("room"));
         if (!room) return bad("room required");
@@ -212,6 +227,7 @@ export default {
           roomId: room,
           archive: body.archive,
         });
+        if (result.ok) await recordRoomCreated(env);
         return result.ok ? json(result, 201) : bad(result.error ?? "restore failed");
       }
 
@@ -233,6 +249,7 @@ export default {
           pot: body.pot ?? 0,
           hostName: body.hostName ?? "",
         });
+        if (r.ok) await recordRoomCreated(env);
         return r.ok ? json(r) : bad(r.error ?? "failed");
       }
 

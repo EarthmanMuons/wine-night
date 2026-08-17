@@ -13,6 +13,7 @@ function check(name, condition) {
 
 const index = readFileSync(new URL("./src/index.ts", import.meta.url), "utf8");
 const event = readFileSync(new URL("./src/event.ts", import.meta.url), "utf8");
+const stats = readFileSync(new URL("./src/stats.ts", import.meta.url), "utf8");
 const app = readFileSync(new URL("./public/app.js", import.meta.url), "utf8");
 
 check("request bodies are read through the streaming size guard", index.includes("request.body.getReader()"));
@@ -30,6 +31,10 @@ check("host archives do not serialize private notes", !event.slice(event.indexOf
 check("restores issue fresh participant credentials", event.slice(event.indexOf("restoreHostArchive")).includes("crypto.randomUUID() + crypto.randomUUID()"));
 check("restore payloads have a dedicated size ceiling", index.includes("MAX_ARCHIVE_BYTES"));
 check("host backups cannot expose ballots before the full reveal", event.includes("room backups with ballots are available after the full reveal"));
+check("the public site-stats table only ever stores aggregate day/count columns, never room-identifying data", /CREATE TABLE IF NOT EXISTS daily_counts \(\s*day TEXT PRIMARY KEY,\s*count INTEGER NOT NULL DEFAULT 0\s*\);/.test(stats));
+check("site stats are intentionally public with only a rate limit, no host authorization", /path === "\/api\/site-stats"[\s\S]{0,200}allowRequest/.test(index) && !/path === "\/api\/site-stats"[\s\S]{0,400}authorizedStub/.test(index));
+check("a room is only counted in site stats after it is actually created, not on a failed attempt", index.includes("if (r.ok) await recordRoomCreated(env)") && index.includes("if (result.ok) await recordRoomCreated(env)"));
+check("a site-stats hiccup can never break room creation", index.includes("async function recordRoomCreated(env: Env) {\n  try {"));
 
 console.log(`\n${pass} security tests passed, ${fail} failed`);
 process.exit(fail ? 1 : 0);

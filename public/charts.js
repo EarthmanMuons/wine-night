@@ -138,5 +138,23 @@
     return `<div class="spread">${cells}</div>`;
   }
 
-  window.WNcharts = { hbarChart, rankDistributionChart, miniSpreadHTML, esc };
+  /** Daily counts -> a small HTML bar sparkline, e.g. rooms created per day. */
+  function sparklineHTML(daily) {
+    const counts = daily.map((d) => Number(d.count) || 0);
+    const maxC = Math.max(...counts, 1);
+    const bars = daily
+      .map((d) => {
+        const count = Number(d.count) || 0;
+        const hgt = count ? 6 + (count / maxC) * 30 : 2;
+        return `<div class="sparkline-bar" style="height:${hgt}px" title="${esc(String(d.day))}: ${count} room${count === 1 ? "" : "s"}"></div>`;
+      })
+      .join("");
+    const total = counts.reduce((a, b) => a + b, 0);
+    const label = daily.length
+      ? `Rooms created per day, last ${daily.length} day${daily.length === 1 ? "" : "s"}: ${total} total`
+      : "No rooms created yet";
+    return `<div class="sparkline" role="img" aria-label="${esc(label)}">${bars}</div>`;
+  }
+
+  window.WNcharts = { hbarChart, rankDistributionChart, miniSpreadHTML, sparklineHTML, esc };
 })();

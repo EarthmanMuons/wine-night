@@ -661,6 +661,10 @@ input[aria-invalid="true"] {
 .spread { display: flex; align-items: flex-end; gap: 2px; height: 30px; }
 .spread-cell { flex: 1; background: var(--wine-2); border-radius: 2px 2px 0 0; min-width: 4px; }
 
+.site-stats-card { padding: 14px 16px; }
+.sparkline { display: flex; align-items: flex-end; gap: 2px; height: 36px; margin-top: 8px; }
+.sparkline-bar { flex: 1; background: var(--wine-2); border-radius: 2px 2px 0 0; min-width: 2px; }
+
 .spread-track { position: relative; height: 14px; margin: 14px 0 6px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; }
 .spread-fill { position: absolute; top: 0; bottom: 0; background: linear-gradient(90deg, var(--gold), var(--wine-2)); border-radius: 8px; }
 .spread-labels { display: flex; justify-content: space-between; color: var(--muted); font-size: 11px; margin-top: 4px; }

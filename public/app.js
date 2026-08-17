@@ -436,7 +436,10 @@ function renderLanding() {
       <div class="hint">Hosting the night?</div>
       <button class="btn secondary" id="goHost">Start a new night</button>
     </div>
+
+    <div class="card site-stats-card" id="siteStats" style="text-align:center"></div>
   `;
+	loadSiteStats();
 
 	onBtn(app, '#goJoin', async () => {
 		const roomInput = app.querySelector('#joinRoom');
@@ -524,6 +527,25 @@ function renderLanding() {
 		const demoBtn = app.querySelector('#createDemo');
 		if (demoBtn) demoBtn.addEventListener('click', () => createDemoNight({ hostName: app.querySelector('#hostName').value.trim() }));
 	});
+}
+
+async function loadSiteStats() {
+	const el = app.querySelector('#siteStats');
+	if (!el) return;
+	try {
+		const response = await fetch('/api/site-stats');
+		const data = await response.json();
+		if (!response.ok) throw new Error(data.error || 'failed to load');
+		const total = Number(data.total) || 0;
+		const daily = Array.isArray(data.daily) ? data.daily : [];
+		el.innerHTML = `
+      <div class="hint">${total} room${total === 1 ? '' : 's'} hosted</div>
+      ${window.WNcharts?.sparklineHTML ? window.WNcharts.sparklineHTML(daily) : ''}
+      <div class="hint" style="margin-top:4px">Daily rooms created, last 90 days</div>
+    `;
+	} catch {
+		el.remove();
+	}
 }
 
 const DEMO_WINES = [

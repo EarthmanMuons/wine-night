@@ -8,6 +8,12 @@
         "WineNightEvent"
       ],
       "tag": "v1"
+    },
+    {
+      "new_sqlite_classes": [
+        "SiteStats"
+      ],
+      "tag": "v2"
     }
   ],
   "assets": {
@@ -22,6 +28,10 @@
       {
         "class_name": "WineNightEvent",
         "name": "EVENTS"
+      },
+      {
+        "class_name": "SiteStats",
+        "name": "STATS"
       }
     ]
   },

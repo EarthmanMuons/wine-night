@@ -79,6 +79,8 @@ check("the group insights visibility label only shows next to a private section"
 check("the results banner shows the tasting theme on screen", app.includes('class="banner-theme"') && app.indexOf('class="banner-theme"') < app.indexOf('class="banner-kicker"') && css.includes(".banner-theme"));
 check("the pot amount is folded into the banner kicker instead of its own line", !app.includes('class="pot-total"') && !css.includes(".pot-total") && app.includes("Winner takes"));
 check("a tie shows the shared context before a divider for each co-winner, not just between them", app.includes("'is-tie'") && css.includes(".banner.is-tie .winner-entry") && app.indexOf("winner-note") < app.indexOf("${winnerEntries}"));
+check("the landing page shows public site-wide room stats without blocking on them", app.includes('id="siteStats"') && app.includes("function loadSiteStats") && app.includes("fetch('/api/site-stats')") && app.includes("loadSiteStats();"));
+check("a failed site-stats fetch quietly removes the card instead of showing an error", app.slice(app.indexOf("async function loadSiteStats"), app.indexOf("const DEMO_WINES")).includes("el.remove()"));
 check("person statistics use restrained accessible emoji", ["🎯", "🥂", "👥"].every((emoji) => app.includes(`aria-hidden="true">${emoji}</span>`)));
 check("the ballot comparison names the group clearly", app.includes("<small>The group</small>"));
 
